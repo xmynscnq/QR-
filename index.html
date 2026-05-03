@@ -291,7 +291,9 @@ const templates = {
 };
 
 function updateQR(){
-  const text = document.getElementById("text").value;
+  // 使用 encodeURIComponent 配合 unescape 是最经典且兼容性最好的 UTF-8 转码方案
+  const rawText = document.getElementById("text").value;
+  const text = unescape(encodeURIComponent(rawText));
   const size = +document.getElementById("size").value;
   const ec = document.getElementById("ec").value;
   const dots = document.getElementById("dots").value;
