@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>QR Pro Studio</title>
+
+<script src="https://unpkg.com/qr-code-styling/lib/qr-code-styling.js"></script>
+
+<style>
+body {
+  margin:0;
+  font-family: -apple-system, sans-serif;
+  background:#0f172a;
+  color:#fff;
+}
+.container {
+  display:flex;
+  flex-wrap:wrap;
+}
+.panel {
+  width:320px;
+  padding:20px;
+  background:#111827;
+}
+.preview {
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+input, select {
+  width:100%;
+  margin:6px 0;
+  padding:8px;
+  border-radius:8px;
+  border:none;
+}
+button {
+  width:100%;
+  margin-top:10px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  background:linear-gradient(45deg,#7F00FF,#E100FF);
+  color:#fff;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="panel">
+
+<h3>内容</h3>
+<input id="text" placeholder="输入文本或URL">
+
+<h3>尺寸</h3>
+<input type="range" id="size" min="100" max="1000" value="300">
+
+<h3>纠错等级</h3>
+<select id="ec">
+<option value="L">L</option>
+<option value="M">M</option>
+<option value="Q">Q</option>
+<option value="H" selected>H</option>
+</select>
+
+<h3>点样式</h3>
+<select id="dots">
+<option value="dots">dots</option>
+<option value="rounded">rounded</option>
+<option value="classy">classy</option>
+<option value="square">square</option>
+</select>
+
+<h3>渐变</h3>
+<select id="gradientType">
+<option value="linear">linear</option>
+<option value="radial">radial</option>
+</select>
+
+<input type="color" id="color1" value="#7F00FF">
+<input type="color" id="color2" value="#E100FF">
+
+<h3>角标</h3>
+<select id="corner">
+<option value="square">square</option>
+<option value="extra-rounded">extra-rounded</option>
+<option value="dot">dot</option>
+</select>
+
+<h3>角点</h3>
+<select id="cornerDot">
+<option value="dot">dot</option>
+<option value="square">square</option>
+</select>
+
+<h3>背景</h3>
+<input type="color" id="bg" value="#000000">
+<label><input type="checkbox" id="transparent"> 透明背景</label>
+
+<h3>Logo</h3>
+<input type="file" id="logo">
+<input type="range" id="logoSize" min="0" max="0.4" step="0.05" value="0.2">
+
+<button onclick="updateQR()">更新二维码</button>
+<button onclick="downloadPNG()">下载PNG</button>
+<button onclick="downloadSVG()">下载SVG</button>
+
+</div>
+
+<div class="preview">
+<div id="qr"></div>
+</div>
+
+</div>
+
+<script>
+let qr = new QRCodeStyling({
+  width:300,
+  height:300,
+  data:"https://example.com"
+});
+
+qr.append(document.getElementById("qr"));
+
+function updateQR(){
+  const size = +document.getElementById("size").value;
+  const text = document.getElementById("text").value;
+  const ec = document.getElementById("ec").value;
+  const dots = document.getElementById("dots").value;
+  const gradientType = document.getElementById("gradientType").value;
+  const color1 = document.getElementById("color1").value;
+  const color2 = document.getElementById("color2").value;
+  const corner = document.getElementById("corner").value;
+  const cornerDot = document.getElementById("cornerDot").value;
+  const bg = document.getElementById("bg").value;
+  const transparent = document.getElementById("transparent").checked;
+  const logoInput = document.getElementById("logo");
+  const logoSize = parseFloat(document.getElementById("logoSize").value);
+
+  let logoURL = "";
+  if (logoInput.files.length > 0) {
+    logoURL = URL.createObjectURL(logoInput.files[0]);
+  }
+
+  qr.update({
+    width:size,
+    height:size,
+    data:text,
+    qrOptions:{
+      errorCorrectionLevel:ec
+    },
+    image:logoURL,
+    imageOptions:{
+      imageSize:logoSize,
+      hideBackgroundDots:true
+    },
+    dotsOptions:{
+      type:dots,
+      gradient:{
+        type:gradientType,
+        colorStops:[
+          {offset:0,color:color1},
+          {offset:1,color:color2}
+        ]
+      }
+    },
+    cornersSquareOptions:{
+      type:corner
+    },
+    cornersDotOptions:{
+      type:cornerDot
+    },
+    backgroundOptions:{
+      color: transparent ? "transparent" : bg
+    }
+  });
+}
+
+function downloadPNG(){
+  qr.download({name:"qr",extension:"png"});
+}
+
+function downloadSVG(){
+  qr.download({name:"qr",extension:"svg"});
+}
+</script>
+
+</body>
+</html>
