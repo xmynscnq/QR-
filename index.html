@@ -2,57 +2,47 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>二维码生成器 Pro</title>
+<title>二维码生成器 Pro（高级版）</title>
 
 <script src="https://unpkg.com/qr-code-styling/lib/qr-code-styling.js"></script>
 
 <style>
 body {
   margin:0;
-  font-family:-apple-system, BlinkMacSystemFont;
+  font-family:-apple-system,BlinkMacSystemFont;
   background:#0f172a;
   color:#fff;
 }
-
 .container {
   display:flex;
   height:100vh;
 }
-
 .panel {
-  width:340px;
+  width:360px;
   background:#111827;
   padding:20px;
   overflow:auto;
 }
-
 .preview {
   flex:1;
   display:flex;
   justify-content:center;
   align-items:center;
 }
-
 .section {
   margin-bottom:20px;
 }
-
-h2 {
-  margin-bottom:10px;
-}
-
+h2 {margin-bottom:10px;}
 h3 {
   font-size:14px;
   color:#9ca3af;
   margin-bottom:6px;
 }
-
 .desc {
   font-size:12px;
   color:#6b7280;
   margin-bottom:8px;
 }
-
 input, select {
   width:100%;
   padding:10px;
@@ -62,11 +52,7 @@ input, select {
   background:#1f2937;
   color:#fff;
 }
-
-input[type="color"] {
-  height:40px;
-}
-
+input[type="color"] {height:40px;}
 button {
   width:100%;
   padding:12px;
@@ -77,13 +63,15 @@ button {
   color:#fff;
   cursor:pointer;
 }
-
 .template-btn {
-  display:inline-block;
   width:48%;
   margin:2px;
   padding:8px;
   font-size:12px;
+}
+details summary {
+  cursor:pointer;
+  margin-bottom:10px;
 }
 </style>
 
@@ -96,19 +84,18 @@ button {
 <div class="panel">
 
 <h2>🚀 二维码生成器</h2>
-<p class="desc">生成高质量、可自定义样式的二维码</p>
+<p class="desc">支持高级样式、自定义设计、Logo嵌入</p>
 
 <!-- 内容 -->
 <div class="section">
 <h3>内容</h3>
-<p class="desc">输入网址或文本，扫码后将打开或显示该内容</p>
-<input id="text" placeholder="例如：https://example.com">
+<p class="desc">扫码后打开的内容（网址 / 文本）</p>
+<input id="text" value="https://example.com">
 </div>
 
 <!-- 模板 -->
 <div class="section">
 <h3>快速模板</h3>
-<p class="desc">一键生成漂亮样式</p>
 <button class="template-btn" onclick="preset('classic')">经典黑白</button>
 <button class="template-btn" onclick="preset('purple')">炫酷紫</button>
 <button class="template-btn" onclick="preset('green')">清新绿</button>
@@ -120,7 +107,6 @@ button {
 <h3>外观设计</h3>
 
 <label>点样式</label>
-<p class="desc">二维码小方块的形状</p>
 <select id="dots">
 <option value="square">方块</option>
 <option value="dots">圆点</option>
@@ -128,8 +114,7 @@ button {
 <option value="classy">优雅</option>
 </select>
 
-<label>渐变</label>
-<p class="desc">颜色变化方式</p>
+<label>渐变类型</label>
 <select id="gradientType">
 <option value="linear">线性渐变</option>
 <option value="radial">径向渐变</option>
@@ -138,27 +123,38 @@ button {
 <input type="color" id="color1" value="#7F00FF">
 <input type="color" id="color2" value="#E100FF">
 
+<label>角标样式</label>
+<select id="corner">
+<option value="square">方形</option>
+<option value="extra-rounded">圆角</option>
+<option value="dot">点状</option>
+</select>
+
+<label>角点样式</label>
+<select id="cornerDot">
+<option value="dot">圆点</option>
+<option value="square">方块</option>
+</select>
+
 </div>
 
 <!-- Logo -->
 <div class="section">
 <h3>Logo</h3>
-<p class="desc">中间插入图片（建议简单图标）</p>
+<p class="desc">中间嵌入图片（建议简单图标）</p>
 <input type="file" id="logo">
-<label>大小（建议0.2）</label>
+<label>大小（0~0.4）</label>
 <input type="range" id="logoSize" min="0" max="0.4" step="0.05" value="0.2">
 </div>
 
 <!-- 高级 -->
-<div class="section">
-<h3>高级设置</h3>
+<details class="section">
+<summary>⚙ 高级设置</summary>
 
 <label>尺寸</label>
-<p class="desc">二维码图片大小（推荐300-500）</p>
-<input type="range" id="size" min="100" max="800" value="300">
+<input type="range" id="size" min="100" max="1000" value="300">
 
 <label>纠错等级</label>
-<p class="desc">越高越稳定（推荐H）</p>
 <select id="ec">
 <option value="L">低</option>
 <option value="M">中</option>
@@ -167,12 +163,18 @@ button {
 </select>
 
 <label>背景颜色</label>
-<input type="color" id="bg" value="#000000">
+<input type="color" id="bg" value="#ffffff">
 
-</div>
+<label>透明背景</label>
+<select id="transparent">
+<option value="no">否</option>
+<option value="yes">是</option>
+</select>
 
-<button onclick="downloadPNG()">⬇ 下载 PNG</button>
-<button onclick="downloadSVG()">⬇ 下载 SVG</button>
+</details>
+
+<button onclick="downloadPNG()">下载 PNG</button>
+<button onclick="downloadSVG()">下载 SVG</button>
 
 </div>
 
@@ -193,6 +195,7 @@ let qr = new QRCodeStyling({
 qr.append(document.getElementById("qr"));
 
 function updateQR(){
+
   const text = document.getElementById("text").value;
   const size = +document.getElementById("size").value;
   const ec = document.getElementById("ec").value;
@@ -200,7 +203,10 @@ function updateQR(){
   const gradientType = document.getElementById("gradientType").value;
   const color1 = document.getElementById("color1").value;
   const color2 = document.getElementById("color2").value;
+  const corner = document.getElementById("corner").value;
+  const cornerDot = document.getElementById("cornerDot").value;
   const bg = document.getElementById("bg").value;
+  const transparent = document.getElementById("transparent").value;
   const logoInput = document.getElementById("logo");
   const logoSize = parseFloat(document.getElementById("logoSize").value);
 
@@ -214,8 +220,13 @@ function updateQR(){
     height:size,
     data:text,
     qrOptions:{ errorCorrectionLevel:ec },
+
     image:logoURL,
-    imageOptions:{ imageSize:logoSize, hideBackgroundDots:true },
+    imageOptions:{
+      imageSize:logoSize,
+      hideBackgroundDots:true
+    },
+
     dotsOptions:{
       type:dots,
       gradient:{
@@ -226,7 +237,13 @@ function updateQR(){
         ]
       }
     },
-    backgroundOptions:{ color:bg }
+
+    cornersSquareOptions:{ type:corner },
+    cornersDotOptions:{ type:cornerDot },
+
+    backgroundOptions:{
+      color: transparent==="yes" ? "transparent" : bg
+    }
   });
 }
 
@@ -238,20 +255,38 @@ document.querySelectorAll("input,select").forEach(el=>{
 // 模板
 function preset(type){
   if(type==="classic"){
-    qr.update({ dotsOptions:{color:"#000"}, backgroundOptions:{color:"#fff"} })
+    qr.update({
+      dotsOptions:{color:"#000"},
+      backgroundOptions:{color:"#fff"}
+    });
   }
   if(type==="purple"){
-    qr.update({ dotsOptions:{gradient:{type:"linear",colorStops:[{offset:0,color:"#7F00FF"},{offset:1,color:"#E100FF"}]}} })
+    qr.update({
+      dotsOptions:{
+        gradient:{
+          type:"linear",
+          colorStops:[
+            {offset:0,color:"#7F00FF"},
+            {offset:1,color:"#E100FF"}
+          ]
+        }
+      }
+    });
   }
   if(type==="green"){
-    qr.update({ dotsOptions:{color:"#00c853"}, backgroundOptions:{color:"#ffffff"} })
+    qr.update({
+      dotsOptions:{color:"#00c853"},
+      backgroundOptions:{color:"#ffffff"}
+    });
   }
   if(type==="gold"){
-    qr.update({ dotsOptions:{color:"#d4af37"}, backgroundOptions:{color:"#000000"} })
+    qr.update({
+      dotsOptions:{color:"#d4af37"},
+      backgroundOptions:{color:"#000"}
+    });
   }
 }
 
-// 下载
 function downloadPNG(){
   qr.download({name:"qr",extension:"png"});
 }
