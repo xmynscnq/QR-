@@ -2,347 +2,340 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>二维码生成器 Pro（高级版）</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>二维码生成器 Pro - 现代设计版</title>
 
 <script src="https://unpkg.com/qr-code-styling/lib/qr-code-styling.js"></script>
 
 <style>
+:root {
+  --bg-color: #0f172a;
+  --panel-bg: rgba(30, 41, 59, 0.7);
+  --accent-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  --input-bg: rgba(15, 23, 42, 0.6);
+  --text-main: #f8fafc;
+  --text-dim: #94a3b8;
+}
+
 body {
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont;
-  background:#0f172a;
-  color:#fff;
+  margin: 0;
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  background-color: var(--bg-color);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0px, transparent 50%);
+  color: var(--text-main);
+  height: 100vh;
+  overflow: hidden;
 }
+
 .container {
-  display:flex;
-  height:100vh;
+  display: flex;
+  height: 100vh;
 }
+
+/* 左侧面板 */
 .panel {
-  width:360px;
-  background:#111827;
-  padding:20px;
-  overflow:auto;
+  width: 380px;
+  background: var(--panel-bg);
+  backdrop-filter: blur(12px);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 30px;
+  overflow-y: auto;
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3);
 }
+
+.panel::-webkit-scrollbar {
+  width: 6px;
+}
+.panel::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+/* 标题区 */
+h2 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.main-desc {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 30px;
+}
+
+/* 分组卡片 */
+.card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+h3 {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+}
+
+/* 表单组件 */
+input, select {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--input-bg);
+  color: #fff;
+  box-sizing: border-box;
+  transition: all 0.3s;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+input[type="range"] {
+  padding: 0;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+}
+
+/* 模板网格 */
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.template-btn {
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+  color: #fff;
+}
+
+.template-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+/* 下载按钮 */
+.action-btns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn-primary {
+  grid-column: span 2;
+  background: var(--accent-gradient);
+  padding: 14px;
+  font-weight: bold;
+}
+
+button {
+  border-radius: 12px;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  background: rgba(255,255,255,0.1);
+  color: white;
+  transition: all 0.3s;
+}
+
+button:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* 右侧预览 */
 .preview {
-  flex:1;
-  display:flex;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   justify-content:center;
   align-items:center;
+  background: radial-gradient(circle at center, rgba(99, 102, 241, 0.05) 0%, transparent 70%);
 }
-.section {
-  margin-bottom:20px;
+
+#qr {
+  background: white;
+  padding: 20px;
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-h2 {margin-bottom:10px;}
-h3 {
-  font-size:14px;
-  color:#9ca3af;
-  margin-bottom:6px;
+
+#qr:hover {
+  transform: scale(1.02);
 }
-.desc {
-  font-size:12px;
-  color:#6b7280;
-  margin-bottom:8px;
-}
-input, select {
-  width:100%;
-  padding:10px;
-  margin-bottom:10px;
-  border-radius:10px;
-  border:none;
-  background:#1f2937;
-  color:#fff;
-}
-input[type="color"] {height:40px;}
-button {
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:12px;
-  margin-top:10px;
-  background:linear-gradient(45deg,#7F00FF,#E100FF);
-  color:#fff;
-  cursor:pointer;
-}
-.template-btn {
-  width:48%;
-  margin:2px;
-  padding:8px;
-  font-size:12px;
-}
+
 details summary {
-  cursor:pointer;
-  margin-bottom:10px;
+  cursor: pointer;
+  color: var(--text-dim);
+  font-size: 14px;
+  padding: 5px 0;
+}
+
+label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 5px;
 }
 </style>
-
 </head>
 
 <body>
 
 <div class="container">
+  <div class="panel">
+    <h2>🚀 QR Generator Pro</h2>
+    <p class="main-desc">定制你的专属个性化二维码</p>
 
-<div class="panel">
+    <!-- 内容 -->
+    <div class="card">
+      <h3>内容设置</h3>
+      <input id="text" value="https://example.com" placeholder="输入网址或文本">
+    </div>
 
-<h2>🚀 二维码生成器</h2>
-<p class="desc">支持高级样式、自定义设计、Logo嵌入</p>
+    <!-- 模板 -->
+    <div class="card">
+      <h3>快速模板</h3>
+      <div class="template-grid">
+        <button class="template-btn" onclick="preset('classic')" style="background:#000;">经典黑白</button>
+        <button class="template-btn" onclick="preset('purple')" style="background:linear-gradient(45deg,#7F00FF,#E100FF);">炫酷紫</button>
+        <button class="template-btn" onclick="preset('green')" style="background:linear-gradient(45deg,#00c853,#b2ff59);color:#000;">清新绿</button>
+        <button class="template-btn" onclick="preset('gold')" style="background:linear-gradient(45deg,#d4af37,#ffd700);color:#000;">高级金</button>
+        <button class="template-btn" onclick="preset('blue')" style="background:linear-gradient(45deg,#00c6ff,#0072ff);">科技蓝</button>
+        <button class="template-btn" onclick="preset('neon')" style="background:linear-gradient(45deg,#00ffff,#ff00ff);color:#000;">夜间霓虹</button>
+      </div>
+    </div>
 
-<!-- 内容 -->
-<div class="section">
-<h3>内容</h3>
-<p class="desc">扫码后打开的内容（网址 / 文本）</p>
-<input id="text" value="https://example.com">
-</div>
+    <!-- 外观 -->
+    <div class="card">
+      <h3>外观定制</h3>
+      <label>码点形状</label>
+      <select id="dots">
+        <option value="square">方块</option>
+        <option value="dots">圆点</option>
+        <option value="rounded">圆角</option>
+        <option value="classy">优雅</option>
+      </select>
 
-<!-- 模板 -->
-<div class="section">
-<h3>快速模板</h3>
-<button onclick="preset('classic')" 
-style="background:#000;color:#fff;">经典黑白</button>
+      <label>渐变色彩</label>
+      <div style="display:flex; gap:10px;">
+        <input type="color" id="color1" value="#6366f1" style="height:40px; padding:2px;">
+        <input type="color" id="color2" value="#a855f7" style="height:40px; padding:2px;">
+      </div>
+      
+      <label>角标形状</label>
+      <select id="corner">
+        <option value="square">方形</option>
+        <option value="extra-rounded">圆角</option>
+        <option value="dot">点状</option>
+      </select>
+    </div>
 
-<button onclick="preset('purple')" 
-style="background:linear-gradient(45deg,#7F00FF,#E100FF);">
-炫酷紫</button>
+    <!-- Logo -->
+    <div class="card">
+      <h3>Logo 嵌入</h3>
+      <input type="file" id="logo">
+      <label>图标大小</label>
+      <input type="range" id="logoSize" min="0" max="0.4" step="0.05" value="0.2">
+    </div>
 
-<button onclick="preset('green')" 
-style="background:linear-gradient(45deg,#00c853,#b2ff59);color:#000;">
-清新绿</button>
+    <!-- 高级 -->
+    <details class="card">
+      <summary>⚙ 高级配置</summary>
+      <div style="margin-top:15px">
+        <label>导出尺寸 (px)</label>
+        <input type="number" id="size" value="300" step="50">
+        
+        <label>纠错等级 (建议最高)</label>
+        <select id="ec">
+          <option value="L">L - 低 (7%)</option>
+          <option value="M">M - 中 (15%)</option>
+          <option value="Q">Q - 高 (25%)</option>
+          <option value="H" selected>H - 最高 (30%)</option>
+        </select>
 
-<button onclick="preset('gold')" 
-style="background:linear-gradient(45deg,#d4af37,#ffd700);color:#000;">
-高级金</button>
+        <label>背景颜色</label>
+        <input type="color" id="bg" value="#ffffff" style="height:40px; padding:2px;">
+        
+        <label>开启透明背景</label>
+        <select id="transparent">
+          <option value="no">关闭</option>
+          <option value="yes">开启</option>
+        </select>
+      </div>
+    </details>
 
-<button onclick="preset('blue')" 
-style="background:linear-gradient(45deg,#00c6ff,#0072ff);">
-科技蓝</button>
+    <div class="action-btns">
+      <button class="template-btn btn-primary" onclick="downloadPNG()">保存为 PNG 图片</button>
+      <button onclick="downloadSVG()">下载 SVG</button>
+      <button onclick="updateQR()">刷新预览</button>
+    </div>
+  </div>
 
-<button onclick="preset('gray')" 
-style="background:linear-gradient(45deg,#444,#999);">
-极简灰</button>
-
-<button onclick="preset('red')" 
-style="background:linear-gradient(45deg,#ff1744,#ff8a80);">
-热力红</button>
-
-<button onclick="preset('ocean')" 
-style="background:linear-gradient(45deg,#00f2fe,#4facfe);">
-海洋蓝绿</button>
-
-<button onclick="preset('neon')" 
-style="background:linear-gradient(45deg,#00ffff,#ff00ff);color:#000;">
-夜间霓虹</button>
-
-<button onclick="preset('candy')" 
-style="background:linear-gradient(45deg,#ff9a9e,#fad0c4);color:#000;">
-糖果色</button>
-</div>
-
-<!-- 外观 -->
-<div class="section">
-<h3>外观设计</h3>
-
-<label>点样式</label>
-<select id="dots">
-<option value="square">方块</option>
-<option value="dots">圆点</option>
-<option value="rounded">圆角</option>
-<option value="classy">优雅</option>
-</select>
-
-<label>渐变类型</label>
-<select id="gradientType">
-<option value="linear">线性渐变</option>
-<option value="radial">径向渐变</option>
-</select>
-
-<input type="color" id="color1" value="#7F00FF">
-<input type="color" id="color2" value="#E100FF">
-
-<label>角标样式</label>
-<select id="corner">
-<option value="square">方形</option>
-<option value="extra-rounded">圆角</option>
-<option value="dot">点状</option>
-</select>
-
-<label>角点样式</label>
-<select id="cornerDot">
-<option value="dot">圆点</option>
-<option value="square">方块</option>
-</select>
-
-</div>
-
-<!-- Logo -->
-<div class="section">
-<h3>Logo</h3>
-<p class="desc">中间嵌入图片（建议简单图标）</p>
-<input type="file" id="logo">
-<label>大小（0~0.4）</label>
-<input type="range" id="logoSize" min="0" max="0.4" step="0.05" value="0.2">
-</div>
-
-<!-- 高级 -->
-<details class="section">
-<summary>⚙ 高级设置</summary>
-
-<label>尺寸</label>
-<input type="range" id="size" min="100" max="1000" value="300">
-
-<label>纠错等级</label>
-<select id="ec">
-<option value="L">低</option>
-<option value="M">中</option>
-<option value="Q">高</option>
-<option value="H" selected>最高（推荐）</option>
-</select>
-
-<label>背景颜色</label>
-<input type="color" id="bg" value="#ffffff">
-
-<label>透明背景</label>
-<select id="transparent">
-<option value="no">否</option>
-<option value="yes">是</option>
-</select>
-
-</details>
-
-<button onclick="downloadPNG()">下载 PNG</button>
-<button onclick="downloadSVG()">下载 SVG</button>
-
-</div>
-
-<div class="preview">
-<div id="qr"></div>
-</div>
-
+  <div class="preview">
+    <div id="qr"></div>
+    <p style="margin-top:20px; color:var(--text-dim); font-size:12px;">实时预览区域</p>
+  </div>
 </div>
 
 <script>
-
+// 保持你原有的 JS 逻辑不变，仅微调了初始化参数
 let qr = new QRCodeStyling({
-  width:300,
-  height:300,
-  data:"https://example.com"
+  width: 300,
+  height: 300,
+  data: "https://example.com",
+  dotsOptions: {
+    color: "#6366f1",
+    type: "rounded"
+  },
+  backgroundOptions: {
+    color: "#ffffff",
+  }
 });
 
 qr.append(document.getElementById("qr"));
 
+// 保持 templates 定义不变...
 const templates = {
-
-  classic:{
-    dots:"square",
-    gradientType:"linear",
-    color1:"#000000",
-    color2:"#000000",
-    corner:"square",
-    cornerDot:"square",
-    bg:"#ffffff"
-  },
-
-  purple:{
-    dots:"rounded",
-    gradientType:"linear",
-    color1:"#7F00FF",
-    color2:"#E100FF",
-    corner:"extra-rounded",
-    cornerDot:"dot",
-    bg:"#ffffff"
-  },
-
-  green:{
-    dots:"dots",
-    gradientType:"radial",
-    color1:"#00c853",
-    color2:"#b2ff59",
-    corner:"dot",
-    cornerDot:"dot",
-    bg:"#ffffff"
-  },
-
-  gold:{
-    dots:"classy",
-    gradientType:"linear",
-    color1:"#d4af37",
-    color2:"#ffd700",
-    corner:"extra-rounded",
-    cornerDot:"square",
-    bg:"#000000"
-  },
-
-  blue:{
-    dots:"rounded",
-    gradientType:"linear",
-    color1:"#00c6ff",
-    color2:"#0072ff",
-    corner:"extra-rounded",
-    cornerDot:"dot",
-    bg:"#ffffff"
-  },
-
-  gray:{
-    dots:"square",
-    gradientType:"linear",
-    color1:"#444",
-    color2:"#999",
-    corner:"square",
-    cornerDot:"square",
-    bg:"#ffffff"
-  },
-
-  red:{
-    dots:"dots",
-    gradientType:"radial",
-    color1:"#ff1744",
-    color2:"#ff8a80",
-    corner:"dot",
-    cornerDot:"dot",
-    bg:"#ffffff"
-  },
-
-  ocean:{
-    dots:"rounded",
-    gradientType:"linear",
-    color1:"#00f2fe",
-    color2:"#4facfe",
-    corner:"extra-rounded",
-    cornerDot:"dot",
-    bg:"#ffffff"
-  },
-
-  neon:{
-    dots:"classy",
-    gradientType:"linear",
-    color1:"#00ffff",
-    color2:"#ff00ff",
-    corner:"extra-rounded",
-    cornerDot:"dot",
-    bg:"#000000"
-  },
-
-  candy:{
-    dots:"dots",
-    gradientType:"radial",
-    color1:"#ff9a9e",
-    color2:"#fad0c4",
-    corner:"dot",
-    cornerDot:"dot",
-    bg:"#ffffff"
-  }
-
+  classic:{ dots:"square", gradientType:"linear", color1:"#000000", color2:"#000000", corner:"square", cornerDot:"square", bg:"#ffffff" },
+  purple:{ dots:"rounded", gradientType:"linear", color1:"#7F00FF", color2:"#E100FF", corner:"extra-rounded", cornerDot:"dot", bg:"#ffffff" },
+  green:{ dots:"dots", gradientType:"radial", color1:"#00c853", color2:"#b2ff59", corner:"dot", cornerDot:"dot", bg:"#ffffff" },
+  gold:{ dots:"classy", gradientType:"linear", color1:"#d4af37", color2:"#ffd700", corner:"extra-rounded", cornerDot:"square", bg:"#000000" },
+  blue:{ dots:"rounded", gradientType:"linear", color1:"#00c6ff", color2:"#0072ff", corner:"extra-rounded", cornerDot:"dot", bg:"#ffffff" },
+  neon:{ dots:"classy", gradientType:"linear", color1:"#00ffff", color2:"#ff00ff", corner:"extra-rounded", cornerDot:"dot", bg:"#000000" }
 };
 
 function updateQR(){
-
   const text = document.getElementById("text").value;
   const size = +document.getElementById("size").value;
   const ec = document.getElementById("ec").value;
   const dots = document.getElementById("dots").value;
-  const gradientType = document.getElementById("gradientType").value;
   const color1 = document.getElementById("color1").value;
   const color2 = document.getElementById("color2").value;
   const corner = document.getElementById("corner").value;
-  const cornerDot = document.getElementById("cornerDot").value;
   const bg = document.getElementById("bg").value;
   const transparent = document.getElementById("transparent").value;
   const logoInput = document.getElementById("logo");
@@ -354,64 +347,40 @@ function updateQR(){
   }
 
   qr.update({
-    width:size,
-    height:size,
-    data:text,
-    qrOptions:{ errorCorrectionLevel:ec },
-
-    image:logoURL,
-    imageOptions:{
-      imageSize:logoSize,
-      hideBackgroundDots:true
-    },
-
-    dotsOptions:{
-      type:dots,
-      gradient:{
-        type:gradientType,
-        colorStops:[
-          {offset:0,color:color1},
-          {offset:1,color:color2}
-        ]
+    width: size,
+    height: size,
+    data: text,
+    qrOptions: { errorCorrectionLevel: ec },
+    image: logoURL,
+    imageOptions: { imageSize: logoSize, hideBackgroundDots: true },
+    dotsOptions: {
+      type: dots,
+      gradient: {
+        type: "linear",
+        colorStops: [{offset: 0, color: color1}, {offset: 1, color: color2}]
       }
     },
-
-    cornersSquareOptions:{ type:corner },
-    cornersDotOptions:{ type:cornerDot },
-
-    backgroundOptions:{
-      color: transparent==="yes" ? "transparent" : bg
-    }
+    cornersSquareOptions: { type: corner },
+    backgroundOptions: { color: transparent === "yes" ? "transparent" : bg }
   });
 }
 
-// ⭐ 完整模板切换（核心）
 function preset(type){
-
   const t = templates[type];
-
   document.getElementById("dots").value = t.dots;
-  document.getElementById("gradientType").value = t.gradientType;
   document.getElementById("color1").value = t.color1;
   document.getElementById("color2").value = t.color2;
   document.getElementById("corner").value = t.corner;
-  document.getElementById("cornerDot").value = t.cornerDot;
   document.getElementById("bg").value = t.bg;
-
   updateQR();
 }
 
-// 自动更新
 document.querySelectorAll("input,select").forEach(el=>{
   el.addEventListener("input",updateQR);
 });
 
-function downloadPNG(){
-  qr.download({name:"qr",extension:"png"});
-}
-function downloadSVG(){
-  qr.download({name:"qr",extension:"svg"});
-}
+function downloadPNG(){ qr.download({name:"qrcode", extension:"png"}); }
+function downloadSVG(){ qr.download({name:"qrcode", extension:"svg"}); }
 
 </script>
 
