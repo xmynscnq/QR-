@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>二维码生成器 Pro - 修正版</title>
+<title>二维码生成器 Pro - 最终全功能版</title>
 
 <script src="https://unpkg.com/qr-code-styling/lib/qr-code-styling.js"></script>
 
 <style>
-/* 1. 定义变量，确保一致性 */
+/* 核心配色与基础样式 */
 :root {
   --bg-color: #0f172a;
   --panel-bg: rgba(30, 41, 59, 0.7);
@@ -20,7 +20,7 @@
 
 body {
   margin: 0;
-  font-family: 'Inter', -apple-system, system-ui, sans-serif;
+  font-family: 'Inter', -apple-system, sans-serif;
   background-color: var(--bg-color);
   background-image: 
     radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
@@ -32,7 +32,7 @@ body {
 
 .container { display: flex; height: 100vh; }
 
-/* 左侧面板 */
+/* 左侧面板：设置区 */
 .panel {
   width: 400px;
   background: var(--panel-bg);
@@ -48,7 +48,6 @@ body {
 h2 { margin: 0 0 5px 0; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 24px; }
 .main-desc { font-size: 12px; color: var(--text-dim); margin-bottom: 20px; }
 
-/* 卡片布局 */
 .card {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -57,9 +56,9 @@ h2 { margin: 0 0 5px 0; background: var(--accent-gradient); -webkit-background-c
   margin-bottom: 15px;
 }
 
-h3 { font-size: 13px; color: #a855f7; margin: 0 0 10px 0; display: flex; align-items: center; gap: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+h3 { font-size: 13px; color: #a855f7; margin: 0 0 10px 0; display: flex; align-items: center; gap: 5px; text-transform: uppercase; }
 
-/* 表单组件 */
+/* 输入组件 */
 input, select {
   width: 100%;
   padding: 10px;
@@ -71,76 +70,73 @@ input, select {
   box-sizing: border-box;
 }
 
-input:focus, select:focus {
-  outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-}
-
-input[type="range"] { padding: 0; height: 6px; background: rgba(255, 255, 255, 0.1); cursor: pointer; }
-
 label { display: block; font-size: 11px; color: var(--text-dim); margin-bottom: 4px; }
 
 /* 模板按钮网格 */
 .template-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
 .template-btn {
   padding: 8px; border: none; border-radius: 6px; font-size: 11px; cursor: pointer;
-  transition: transform 0.2s, filter 0.2s; color: #fff; font-weight: 500;
+  transition: 0.2s; color: #fff; font-weight: 500;
 }
-.template-btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
+.template-btn:hover { transform: scale(1.03); filter: brightness(1.1); }
 
-/* 修正的下载操作区域 */
+/* ✨ 重点优化：下载区域样式 */
 .card.actions {
-  padding: 10px;
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.2);
 }
 
 .action-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 1fr 1fr; /* 1:1 等分，地位平等 */
   gap: 12px;
 }
 
-/* 主下载按钮 */
-.btn-primary {
-  grid-column: span 2;
+.btn-download {
   background: var(--accent-gradient);
   color: white;
-  padding: 14px;
-  border-radius: 12px;
+  padding: 12px;
+  border-radius: 10px;
   font-weight: bold;
   font-size: 14px;
   cursor: pointer;
   border: none;
-  transition: transform 0.2s, filter 0.2s;
-  box-shadow: 0 4px 15px rgba(108, 102, 241, 0.3);
-}
-.btn-primary:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.1);
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
-/* 次要按钮 */
-.btn-secondary {
-  background: rgba(255, 255, 255, 0.05); /* 半透明白，但要能看到文字 */
+.btn-download:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(127, 0, 255, 0.3);
+}
+
+.btn-download span {
+  font-size: 10px;
+  opacity: 0.7;
+  font-weight: normal;
+  margin-top: 2px;
+}
+
+.btn-refresh {
+  grid-column: span 2;
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text-dim);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 12px;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 500;
+  padding: 8px;
+  border-radius: 8px;
+  font-size: 12px;
   cursor: pointer;
-  transition: background 0.3s, color 0.3s;
-}
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+  margin-top: 5px;
 }
 
-/* 预览区 */
-.preview { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; background: radial-gradient(circle at center, rgba(99, 102, 241, 0.05) 0%, transparent 70%); }
+/* 右侧预览区 */
+.preview { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 #qr { background: #fff; padding: 20px; border-radius: 20px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); }
 
-details summary { cursor: pointer; font-size: 13px; color: var(--text-dim); outline: none; padding: 5px 0; }
+details summary { cursor: pointer; font-size: 13px; color: var(--text-dim); outline: none; }
 </style>
 </head>
 
@@ -149,15 +145,15 @@ details summary { cursor: pointer; font-size: 13px; color: var(--text-dim); outl
 <div class="container">
   <div class="panel">
     <h2>🚀 二维码生成器 Pro</h2>
-    <p class="main-desc">全功能高级版 - 修正版下载区域</p>
+    <p class="main-desc">支持高级样式、自定义设计、SVG矢量导出</p>
 
-    <!-- 内容卡片 -->
+    <!-- 内容 -->
     <div class="card">
       <h3>📝 内容设置</h3>
-      <input id="text" value="https://example.com" placeholder="输入链接或文字">
+      <input id="text" value="https://example.com" placeholder="输入网址或文本">
     </div>
 
-    <!-- 模板卡片 -->
+    <!-- 模板 -->
     <div class="card">
       <h3>🎨 快速模板</h3>
       <div class="template-grid">
@@ -174,7 +170,7 @@ details summary { cursor: pointer; font-size: 13px; color: var(--text-dim); outl
       </div>
     </div>
 
-    <!-- 样式卡片 -->
+    <!-- 样式 -->
     <div class="card">
       <h3>✨ 样式定制</h3>
       <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
@@ -195,7 +191,7 @@ details summary { cursor: pointer; font-size: 13px; color: var(--text-dim); outl
           </select>
         </div>
       </div>
-      <label>颜色设置</label>
+      <label>渐变颜色</label>
       <div style="display:flex; gap:10px;">
         <input type="color" id="color1" value="#7F00FF" style="height:35px; padding:2px;">
         <input type="color" id="color2" value="#E100FF" style="height:35px; padding:2px;">
@@ -219,15 +215,15 @@ details summary { cursor: pointer; font-size: 13px; color: var(--text-dim); outl
       </div>
     </div>
 
-    <!-- Logo 卡片 -->
+    <!-- Logo -->
     <div class="card">
-      <h3>🖼 Logo 设置</h3>
+      <h3>🖼 Logo 嵌入</h3>
       <input type="file" id="logo">
-      <label>图标大小 (0 ~ 0.4)</label>
+      <label>大小 (0 ~ 0.4)</label>
       <input type="range" id="logoSize" min="0" max="0.4" step="0.05" value="0.2">
     </div>
 
-    <!-- 高级设置卡片 -->
+    <!-- 高级 -->
     <details class="card">
       <summary>⚙ 高级参数</summary>
       <div style="padding-top:10px;">
@@ -250,34 +246,108 @@ details summary { cursor: pointer; font-size: 13px; color: var(--text-dim); outl
       </div>
     </details>
 
-    <!-- 修正后的下载与操作卡片 -->
+    <!-- 💾 导出文件：PNG 和 SVG 平起平坐 -->
     <div class="card actions">
-      <h3>💾 下载与操作</h3>
+      <h3>💾 导出文件</h3>
       <div class="action-grid">
-        <button class="btn-primary" onclick="downloadPNG()">下载 PNG 图像 (主选项)</button>
-        <button class="btn-secondary" onclick="downloadSVG()">下载 SVG</button>
-        <button class="btn-secondary" onclick="updateQR()">刷新预览</button>
+        <button class="btn-download" onclick="downloadPNG()">
+          下载图片
+          <span>Format: .PNG</span>
+        </button>
+        <button class="btn-download" onclick="downloadSVG()">
+          矢量图形
+          <span>Format: .SVG</span>
+        </button>
+        <button class="btn-refresh" onclick="updateQR()">
+          ↺ 预览未更新？点此强制刷新
+        </button>
       </div>
     </div>
-
   </div>
 
   <div class="preview">
     <div id="qr"></div>
-    <p style="margin-top:20px; color:var(--text-dim); font-size:12px;">建议嵌入 Logo 后将纠错等级设为“最高”</p>
+    <p style="margin-top:20px; color:var(--text-dim); font-size:12px;">实时预览区域</p>
   </div>
 </div>
 
 <script>
-// 保持所有 JS 逻辑不变
+// 初始化
 let qr = new QRCodeStyling({ width: 300, height: 300, data: "https://example.com" });
 qr.append(document.getElementById("qr"));
-const templates = { classic:{ dots:"square", gradientType:"linear", color1:"#000000", color2:"#000000", corner:"square", cornerDot:"square", bg:"#ffffff" }, purple:{ dots:"rounded", gradientType:"linear", color1:"#7F00FF", color2:"#E100FF", corner:"extra-rounded", cornerDot:"dot", bg:"#ffffff" }, green:{ dots:"dots", gradientType:"radial", color1:"#00c853", color2:"#b2ff59", corner:"dot", cornerDot:"dot", bg:"#ffffff" }, gold:{ dots:"classy", gradientType:"linear", color1:"#d4af37", color2:"#ffd700", corner:"extra-rounded", cornerDot:"square", bg:"#000000" }, blue:{ dots:"rounded", gradientType:"linear", color1:"#00c6ff", color2:"#0072ff", corner:"extra-rounded", cornerDot:"dot", bg:"#ffffff" }, gray:{ dots:"square", gradientType:"linear", color1:"#444444", color2:"#999999", corner:"square", cornerDot:"square", bg:"#ffffff" }, red:{ dots:"dots", gradientType:"radial", color1:"#ff1744", color2:"#ff8a80", corner:"dot", cornerDot:"dot", bg:"#ffffff" }, ocean:{ dots:"rounded", gradientType:"linear", color1:"#00f2fe", color2:"#4facfe", corner:"extra-rounded", cornerDot:"dot", bg:"#ffffff" }, neon:{ dots:"classy", gradientType:"linear", color1:"#00ffff", color2:"#ff00ff", corner:"extra-rounded", cornerDot:"dot", bg:"#000000" }, candy:{ dots:"dots", gradientType:"radial", color1:"#ff9a9e", color2:"#fad0c4", corner:"dot", cornerDot:"dot", bg:"#ffffff" } };
-function updateQR(){ const text = document.getElementById("text").value; const size = +document.getElementById("size").value; const ec = document.getElementById("ec").value; const dots = document.getElementById("dots").value; const gradientType = document.getElementById("gradientType").value; const color1 = document.getElementById("color1").value; const color2 = document.getElementById("color2").value; const corner = document.getElementById("corner").value; const cornerDot = document.getElementById("cornerDot").value; const bg = document.getElementById("bg").value; const transparent = document.getElementById("transparent").value; const logoInput = document.getElementById("logo"); const logoSize = parseFloat(document.getElementById("logoSize").value); let logoURL = ""; if (logoInput.files.length > 0) { logoURL = URL.createObjectURL(logoInput.files[0]); } qr.update({ width: size, height: size, data: text, qrOptions: { errorCorrectionLevel: ec }, image: logoURL, imageOptions: { imageSize: logoSize, hideBackgroundDots: true }, dotsOptions: { type: dots, gradient: { type: gradientType, colorStops: [{offset: 0, color: color1}, {offset: 1, color: color2}] } }, cornersSquareOptions: { type: corner }, cornersDotOptions: { type: cornerDot }, backgroundOptions: { color: transparent === "yes" ? "transparent" : bg } }); }
-function preset(type){ const t = templates[type]; document.getElementById("dots").value = t.dots; document.getElementById("gradientType").value = t.gradientType; document.getElementById("color1").value = t.color1; document.getElementById("color2").value = t.color2; document.getElementById("corner").value = t.corner; document.getElementById("cornerDot").value = t.cornerDot; document.getElementById("bg").value = t.bg; updateQR(); }
-document.querySelectorAll("input,select").forEach(el=>{ el.addEventListener("input",updateQR); });
+
+// 10个完整模板
+const templates = {
+  classic:{ dots:"square", gradientType:"linear", color1:"#000000", color2:"#000000", corner:"square", cornerDot:"square", bg:"#ffffff" },
+  purple:{ dots:"rounded", gradientType:"linear", color1:"#7F00FF", color2:"#E100FF", corner:"extra-rounded", cornerDot:"dot", bg:"#ffffff" },
+  green:{ dots:"dots", gradientType:"radial", color1:"#00c853", color2:"#b2ff59", corner:"dot", cornerDot:"dot", bg:"#ffffff" },
+  gold:{ dots:"classy", gradientType:"linear", color1:"#d4af37", color2:"#ffd700", corner:"extra-rounded", cornerDot:"square", bg:"#000000" },
+  blue:{ dots:"rounded", gradientType:"linear", color1:"#00c6ff", color2:"#0072ff", corner:"extra-rounded", cornerDot:"dot", bg:"#ffffff" },
+  gray:{ dots:"square", gradientType:"linear", color1:"#444444", color2:"#999999", corner:"square", cornerDot:"square", bg:"#ffffff" },
+  red:{ dots:"dots", gradientType:"radial", color1:"#ff1744", color2:"#ff8a80", corner:"dot", cornerDot:"dot", bg:"#ffffff" },
+  ocean:{ dots:"rounded", gradientType:"linear", color1:"#00f2fe", color2:"#4facfe", corner:"extra-rounded", cornerDot:"dot", bg:"#ffffff" },
+  neon:{ dots:"classy", gradientType:"linear", color1:"#00ffff", color2:"#ff00ff", corner:"extra-rounded", cornerDot:"dot", bg:"#000000" },
+  candy:{ dots:"dots", gradientType:"radial", color1:"#ff9a9e", color2:"#fad0c4", corner:"dot", cornerDot:"dot", bg:"#ffffff" }
+};
+
+function updateQR(){
+  const text = document.getElementById("text").value;
+  const size = +document.getElementById("size").value;
+  const ec = document.getElementById("ec").value;
+  const dots = document.getElementById("dots").value;
+  const gradientType = document.getElementById("gradientType").value;
+  const color1 = document.getElementById("color1").value;
+  const color2 = document.getElementById("color2").value;
+  const corner = document.getElementById("corner").value;
+  const cornerDot = document.getElementById("cornerDot").value;
+  const bg = document.getElementById("bg").value;
+  const transparent = document.getElementById("transparent").value;
+  const logoInput = document.getElementById("logo");
+  const logoSize = parseFloat(document.getElementById("logoSize").value);
+
+  let logoURL = "";
+  if (logoInput.files.length > 0) {
+    logoURL = URL.createObjectURL(logoInput.files[0]);
+  }
+
+  qr.update({
+    width: size, height: size, data: text,
+    qrOptions: { errorCorrectionLevel: ec },
+    image: logoURL,
+    imageOptions: { imageSize: logoSize, hideBackgroundDots: true },
+    dotsOptions: {
+      type: dots,
+      gradient: {
+        type: gradientType,
+        colorStops: [{offset: 0, color: color1}, {offset: 1, color: color2}]
+      }
+    },
+    cornersSquareOptions: { type: corner },
+    cornersDotOptions: { type: cornerDot },
+    backgroundOptions: { color: transparent === "yes" ? "transparent" : bg }
+  });
+}
+
+function preset(type){
+  const t = templates[type];
+  document.getElementById("dots").value = t.dots;
+  document.getElementById("gradientType").value = t.gradientType;
+  document.getElementById("color1").value = t.color1;
+  document.getElementById("color2").value = t.color2;
+  document.getElementById("corner").value = t.corner;
+  document.getElementById("cornerDot").value = t.cornerDot;
+  document.getElementById("bg").value = t.bg;
+  updateQR();
+}
+
+document.querySelectorAll("input,select").forEach(el=>{
+  el.addEventListener("input",updateQR);
+});
+
 function downloadPNG(){ qr.download({name:"qrcode_pro", extension:"png"}); }
 function downloadSVG(){ qr.download({name:"qrcode_pro", extension:"svg"}); }
+
+// 初次强制渲染预览
 updateQR();
 </script>
 
