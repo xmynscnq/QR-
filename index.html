@@ -847,8 +847,16 @@ document.getElementById("logoSize").addEventListener("input", function() {
 });
 
 // ── Main update (preview always fixed PREVIEW_PX) ──
+function encodeForQR(str) {
+  // 用 TextEncoder 转成 UTF-8 字节数组，再转成 ISO-8859-1 字符串
+  // 这是让 qr-code-styling 正确编码中文的标准方法
+  const bytes = new TextEncoder().encode(str);
+  return Array.from(bytes).map(b => String.fromCharCode(b)).join('');
+}
+
 function updateQR() {
-  const text       = document.getElementById("text").value || " ";  // 直接传原始字符串，库内部处理UTF-8
+  const raw  = document.getElementById("text").value || " ";
+  const text = encodeForQR(raw);
   const dots       = document.getElementById("dots").value;
   const gradType   = document.getElementById("gradientType").value;
   const c1         = document.getElementById("color1").value;
@@ -895,7 +903,8 @@ function downloadBlob(blob, filename) {
 }
 
 function getExportQR() {
-  const text      = document.getElementById("text").value || " ";
+  const raw   = document.getElementById("text").value || " ";
+  const text  = encodeForQR(raw);
   const dots      = document.getElementById("dots").value;
   const gradType  = document.getElementById("gradientType").value;
   const c1        = document.getElementById("color1").value;
