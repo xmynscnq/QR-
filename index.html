@@ -531,7 +531,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 /* ══════════════════════════════════════
-   RESPONSIVE — Tablet
+   RESPONSIVE — Tablet (≤900px)
 ═══════════════════════════════════════ */
 @media (max-width: 900px) {
   .main {
@@ -541,31 +541,54 @@ input[type="range"]::-webkit-slider-thumb {
     overflow: visible;
   }
 
+  /* 侧栏变横向网格 */
   .sidebar, .sidebar-right {
     border: none;
     border-bottom: 1px solid var(--border);
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 8px 16px;
-    padding: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px 20px;
+    padding: 20px;
     align-items: start;
   }
 
   .section-label { grid-column: 1 / -1; }
-  .divider { grid-column: 1 / -1; }
+  .divider { grid-column: 1 / -1; height: 1px; }
 
-  .center { padding: 30px 16px; min-height: 480px; justify-content: center; gap: 24px; }
+  .center {
+    padding: 30px 20px;
+    min-height: auto;
+    justify-content: center;
+    gap: 24px;
+  }
 
-  .templates-row { grid-template-columns: repeat(5, 1fr); max-width: 100%; }
+  .templates-row {
+    grid-template-columns: repeat(5, 1fr);
+    max-width: 100%;
+  }
+
+  /* 导出块横排 */
+  .export-block {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .size-display { grid-column: 1 / -1; }
+  .btn-refresh  { grid-column: 1 / -1; }
+  .ec-row { grid-column: 1 / -1; }
 }
 
 /* ══════════════════════════════════════
-   RESPONSIVE — Mobile
+   RESPONSIVE — Mobile (≤580px)
 ═══════════════════════════════════════ */
 @media (max-width: 580px) {
-  header { padding: 14px 16px; flex-wrap: wrap; position: relative; }
+  /* Header: logo 左，输入框占满下一行 */
+  header {
+    flex-wrap: wrap;
+    padding: 12px 16px;
+    gap: 10px;
+  }
   .logo { font-size: 15px; }
-  /* On mobile: drop absolute centering, go full-width below logo */
   .header-input-wrap {
     position: static;
     transform: none;
@@ -574,15 +597,30 @@ input[type="range"]::-webkit-slider-thumb {
     order: 3;
   }
 
+  /* 侧栏两列 */
   .sidebar, .sidebar-right {
     grid-template-columns: 1fr 1fr;
+    padding: 16px;
+    gap: 8px 14px;
   }
 
-  .templates-row { grid-template-columns: repeat(5, 1fr); }
+  /* 模板5列保持，允许滚动 */
+  .templates-row {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
 
-  .color-row { flex-direction: row; }
+  /* 二维码缩小适配屏幕 */
+  #qr-wrapper { padding: 12px; }
 
-  :root { --preview-size: 220px; }
+  /* 导出块单列 */
+  .export-block {
+    grid-template-columns: 1fr;
+  }
+
+  .ec-row { grid-template-columns: repeat(4, 1fr); }
+
+  .toggle-row { grid-column: 1 / -1; }
 }
 </style>
 </head>
@@ -824,9 +862,10 @@ document.getElementById("logoSize").addEventListener("input", function() {
   updateQR();
 });
 
-// ── Main update (preview always 280px) ──
+// ── Main update (preview always fixed PREVIEW_PX) ──
 function updateQR() {
-  const text       = document.getElementById("text").value || " ";
+  const rawText    = document.getElementById("text").value || " ";
+  const text       = unescape(encodeURIComponent(rawText));  // 支持中文/UTF-8
   const dots       = document.getElementById("dots").value;
   const gradType   = document.getElementById("gradientType").value;
   const c1         = document.getElementById("color1").value;
