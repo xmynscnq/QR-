@@ -536,12 +536,10 @@ input[type="range"]::-webkit-slider-thumb {
 @media (max-width: 900px) {
   .main {
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
     height: auto;
     overflow: visible;
   }
 
-  /* 侧栏变横向网格 */
   .sidebar, .sidebar-right {
     border: none;
     border-bottom: 1px solid var(--border);
@@ -553,74 +551,60 @@ input[type="range"]::-webkit-slider-thumb {
   }
 
   .section-label { grid-column: 1 / -1; }
-  .divider { grid-column: 1 / -1; height: 1px; }
+  .divider { grid-column: 1 / -1; }
 
-  .center {
-    padding: 30px 20px;
-    min-height: auto;
-    justify-content: center;
-    gap: 24px;
-  }
+  .center { padding: 28px 20px; min-height: auto; justify-content: center; gap: 20px; }
+  .templates-row { max-width: 100%; }
 
-  .templates-row {
-    grid-template-columns: repeat(5, 1fr);
-    max-width: 100%;
-  }
-
-  /* 导出块横排 */
-  .export-block {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
+  .export-block { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .size-display { grid-column: 1 / -1; }
   .btn-refresh  { grid-column: 1 / -1; }
-  .ec-row { grid-column: 1 / -1; }
 }
 
 /* ══════════════════════════════════════
-   RESPONSIVE — Mobile (≤580px)
+   RESPONSIVE — Mobile (≤600px)
 ═══════════════════════════════════════ */
-@media (max-width: 580px) {
-  /* Header: logo 左，输入框占满下一行 */
+@media (max-width: 600px) {
+  /* Header: logo + input 竖排 */
   header {
     flex-wrap: wrap;
     padding: 12px 16px;
-    gap: 10px;
+    gap: 8px;
   }
-  .logo { font-size: 15px; }
+  .logo { font-size: 15px; width: 100%; }
   .header-input-wrap {
     position: static;
     transform: none;
     width: 100%;
     max-width: 100%;
-    order: 3;
   }
 
-  /* 侧栏两列 */
+  /* 侧栏单列 */
   .sidebar, .sidebar-right {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     padding: 16px;
-    gap: 8px 14px;
+    gap: 10px;
   }
 
-  /* 模板5列保持，允许滚动 */
-  .templates-row {
-    grid-template-columns: repeat(5, 1fr);
-    gap: 6px;
-  }
+  /* 色块横排保持 */
+  .color-row { flex-direction: row; }
 
-  /* 二维码缩小适配屏幕 */
-  #qr-wrapper { padding: 12px; }
+  /* 二维码适配小屏 */
+  #qr-wrapper { padding: 10px; }
+  #qr canvas, #qr svg { max-width: calc(100vw - 80px) !important; max-height: calc(100vw - 80px) !important; }
+
+  /* 模板两行五列 */
+  .templates-row { gap: 5px; }
+  .tpl-btn { border-radius: 8px; }
 
   /* 导出块单列 */
-  .export-block {
-    grid-template-columns: 1fr;
-  }
+  .export-block { grid-template-columns: 1fr; }
 
+  /* 纠错按钮四列 */
   .ec-row { grid-template-columns: repeat(4, 1fr); }
 
-  .toggle-row { grid-column: 1 / -1; }
+  /* toggle 撑满 */
+  .toggle-row { padding: 8px 0; }
 }
 </style>
 </head>
@@ -864,8 +848,7 @@ document.getElementById("logoSize").addEventListener("input", function() {
 
 // ── Main update (preview always fixed PREVIEW_PX) ──
 function updateQR() {
-  const rawText    = document.getElementById("text").value || " ";
-  const text       = unescape(encodeURIComponent(rawText));  // 支持中文/UTF-8
+  const text       = document.getElementById("text").value || " ";  // 直接传原始字符串，库内部处理UTF-8
   const dots       = document.getElementById("dots").value;
   const gradType   = document.getElementById("gradientType").value;
   const c1         = document.getElementById("color1").value;
@@ -882,7 +865,6 @@ function updateQR() {
     logoURL = URL.createObjectURL(logoInput.files[0]);
   }
 
-  // Preview always renders at fixed PREVIEW_PX
   qr.update({
     width: PREVIEW_PX, height: PREVIEW_PX,
     data: text,
@@ -901,8 +883,18 @@ function updateQR() {
   updateCm();
 }
 
-// ── Download (uses export size from #size input) ──
-function getExportConfig() {
+// ── 兼容所有浏览器（含夸克）的下载方法 ──
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 300);
+}
+
+function getExportQR() {
   const text      = document.getElementById("text").value || " ";
   const dots      = document.getElementById("dots").value;
   const gradType  = document.getElementById("gradientType").value;
@@ -912,14 +904,12 @@ function getExportConfig() {
   const cornerDot = document.getElementById("cornerDot").value;
   const bg        = document.getElementById("bg").value;
   const isTransparent = document.getElementById("transparentToggle").classList.contains("on");
-  const size      = parseInt(document.getElementById("size").value) || 600;
+  const size      = parseInt(document.getElementById("size").value) || 300;
   const logoInput = document.getElementById("logo");
   const logoSize  = parseFloat(document.getElementById("logoSize").value);
 
   let logoURL = "";
-  if (logoInput.files.length > 0) {
-    logoURL = URL.createObjectURL(logoInput.files[0]);
-  }
+  if (logoInput.files.length > 0) logoURL = URL.createObjectURL(logoInput.files[0]);
 
   return new QRCodeStyling({
     width: size, height: size,
@@ -938,11 +928,17 @@ function getExportConfig() {
 }
 
 function downloadPNG() {
-  getExportConfig().download({ name: "qrcode_pro", extension: "png" });
+  const exportQR = getExportQR();
+  exportQR.getRawData("png").then(blob => {
+    downloadBlob(blob, "qrcode_pro.png");
+  });
 }
 
 function downloadSVG() {
-  getExportConfig().download({ name: "qrcode_pro", extension: "svg" });
+  const exportQR = getExportQR();
+  exportQR.getRawData("svg").then(blob => {
+    downloadBlob(blob, "qrcode_pro.svg");
+  });
 }
 
 // ── Event listeners ──
